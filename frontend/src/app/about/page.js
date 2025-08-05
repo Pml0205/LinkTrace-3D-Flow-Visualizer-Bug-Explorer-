@@ -1,5 +1,5 @@
 'use client';
-import AboutSection from '../components/AboutSection';
+import AboutSection from '../../components/AboutSection';
 
 export default function AboutPage() {
   return (
