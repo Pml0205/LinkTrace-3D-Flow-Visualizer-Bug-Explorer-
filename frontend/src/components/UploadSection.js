@@ -2,11 +2,11 @@
 
 import { useState, useRef } from 'react';
 import Link from 'next/link';
-import './UploadSection.css'; // Import the external CSS
+import './UploadSection.css';
 
 function UploadSection() {
   const [dragActive, setDragActive] = useState(false);
-  const [files, setFiles] = useState([]);
+  const [files, setFiles] = useState([]); // { file, path }
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef(null);
 
@@ -24,23 +24,23 @@ function UploadSection() {
     e.preventDefault();
     e.stopPropagation();
     setDragActive(false);
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
       handleFiles(e.dataTransfer.files);
     }
   };
 
   const handleFiles = (fileList) => {
-    const newFiles = Array.from(fileList).filter((file) =>
-      file.type.includes('javascript') ||
-      file.type.includes('typescript') ||
-      file.name.endsWith('.js') ||
-      file.name.endsWith('.ts') ||
-      file.name.endsWith('.jsx') ||
-      file.name.endsWith('.tsx') ||
-      file.name.endsWith('.json') ||
-      file.name.endsWith('.py') ||
-      file.name.endsWith('.java')
-    );
+    const acceptedExtensions = ['.js', '.ts', '.jsx', '.tsx', '.json', '.py', '.java'];
+
+    const newFiles = Array.from(fileList)
+      .filter((file) =>
+        acceptedExtensions.some((ext) => file.name.toLowerCase().endsWith(ext))
+      )
+      .map((file) => ({
+        file,
+        path: file.webkitRelativePath || file.name,
+      }));
+
     setFiles((prev) => [...prev, ...newFiles]);
   };
 
@@ -57,9 +57,9 @@ function UploadSection() {
   const handleUpload = async () => {
     if (files.length === 0) return;
     setUploading(true);
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    await new Promise((resolve) => setTimeout(resolve, 2000)); // Simulate delay
     setUploading(false);
-    console.log('Files ready for processing:', files);
+    console.log('Files ready for visualization:', files.map((f) => f.path));
     alert('Upload successful!');
   };
 
@@ -76,7 +76,7 @@ function UploadSection() {
       <div className="upload-container">
         <div className="upload-header">
           <h1>Upload Your Project</h1>
-          <p>Drop or select your code files to begin</p>
+          <p>Drop or select your project folder to begin</p>
         </div>
 
         <div
@@ -90,17 +90,19 @@ function UploadSection() {
             ref={fileInputRef}
             type="file"
             multiple
-            accept=".js,.ts,.jsx,.tsx,.json,.py,.java"
+            webkitdirectory="true"
+            directory=""
             onChange={handleFileInput}
             className="hidden-input"
           />
+
           <div className="upload-prompt">
             <div className="upload-icon">{dragActive ? '📂' : '📁'}</div>
-            <h2>{dragActive ? 'Drop your files here' : 'Drag & drop your files here'}</h2>
+            <h2>{dragActive ? 'Drop your folder here' : 'Drag & drop your folder here'}</h2>
             <p>
               or{' '}
               <button onClick={() => fileInputRef.current?.click()} className="upload-browse">
-                Browse files
+                Browse folder
               </button>
             </p>
             <div className="file-extensions">
@@ -115,12 +117,12 @@ function UploadSection() {
           <div className="file-list">
             <h3>Selected Files ({files.length})</h3>
             <div className="file-scroll">
-              {files.map((file, index) => (
+              {files.map(({ file, path }, index) => (
                 <div key={index} className="file-item">
                   <div className="file-details">
                     <span className="file-emoji">📄</span>
                     <div>
-                      <p className="file-name">{file.name}</p>
+                      <p className="file-name">{path}</p>
                       <p className="file-size">{formatFileSize(file.size)}</p>
                     </div>
                   </div>
@@ -147,9 +149,7 @@ function UploadSection() {
 
         <div className="upload-back">
           <Link href="#home">
-            <span>
-              ← Back to Home
-            </span>
+            <span>← Back to Home</span>
           </Link>
         </div>
       </div>

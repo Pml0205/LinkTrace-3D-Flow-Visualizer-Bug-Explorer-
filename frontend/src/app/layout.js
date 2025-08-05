@@ -5,6 +5,7 @@ export const metadata = {
 
 import ScrollToTop from './scroll-to-top';
 import UploadSection from '../components/UploadSection.js';
+import AboutSection from '../components/About.js';
 import './globals.css';
 
 
@@ -69,9 +70,10 @@ export default function RootLayout({ children }) {
           <a href="#upload">Upload</a>
           <a href="#visualizer">Visualizer</a>
           <a href="#errors">Errors</a>
-          <a href="#explorer">Explorer</a>
+          
           <a href="#report">Report</a>
           <a href="#about">About</a>
+          <a href="#explorer">Join Us</a>
         </nav>
 
         <section id="home">{children}</section>
@@ -80,7 +82,7 @@ export default function RootLayout({ children }) {
         <section id="errors">Errors Section</section>
         <section id="explorer">Explorer Section</section>
         <section id="report">Report Section</section>
-        <section id="about">About Section</section>
+        <section id="about"><AboutSection /></section>
       </body>
     </html>
   );
