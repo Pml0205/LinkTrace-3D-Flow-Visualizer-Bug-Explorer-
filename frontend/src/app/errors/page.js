@@ -1,8 +1,9 @@
-export default function ErrorsPage() {
+import BugChecker from "../components/BugChecker";
+
+export default function Home() {
   return (
-    <div>
-      <h2>Error Summary</h2>
-      <p>This section will list all detected code errors.</p>
-    </div>
+    <main>
+      <BugChecker />
+    </main>
   );
 }
