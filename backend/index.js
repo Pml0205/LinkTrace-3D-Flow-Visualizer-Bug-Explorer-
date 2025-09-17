@@ -2,12 +2,22 @@ const express = require("express");
 const multer = require("multer");
 const cors = require("cors");
 const axios = require("axios");
+const { Pool } = require("pg");  // ✅ Added for PostgreSQL
 
 const app = express();
 const PORT = 5000;
 
 app.use(cors());
 app.use(express.json()); // For JSON parsing
+
+// ✅ PostgreSQL connection setup
+const pool = new Pool({
+  user: "postgres",     // e.g. postgres
+  host: "localhost",
+  database: "linktrace",
+  password: "Palak@0205",
+  port: 5432,
+});
 
 // Multer setup for multiple files
 const storage = multer.memoryStorage();
@@ -74,6 +84,17 @@ app.post("/upload", upload.array("files"), async (req, res) => {
     graphData: { nodes, links },
     bugData
   });
+});
+
+// ✅ Test DB connection route
+app.get("/db-test", async (req, res) => {
+  try {
+    const result = await pool.query("SELECT NOW()");
+    res.json({ message: "Connected to PostgreSQL", time: result.rows[0] });
+  } catch (err) {
+    console.error("DB connection error:", err);
+    res.status(500).json({ error: "Database connection failed" });
+  }
 });
 
 app.listen(PORT, () => console.log(`Backend running on http://localhost:${PORT}`));
